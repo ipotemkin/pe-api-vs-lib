@@ -1,4 +1,4 @@
-# Postman API Library для GigaChat
+# Примеры использования API GigaChat
 
 Библиотека для работы с GigaChat API через различные методы: HTTP запросы (requests), curl команды и официальный SDK.
 
