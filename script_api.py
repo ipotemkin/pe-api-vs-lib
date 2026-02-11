@@ -1,27 +1,24 @@
-import os
 import pprint
-import sys
 
 from gigachat_api import execute_prompt, get_access_token
-from dotenv import load_dotenv
-
-from logger import logger
-
-load_dotenv()
-
-GIGACHAT_CLIENT_ID = os.getenv("GIGACHAT_CLIENT_ID", None)
-GIGACHAT_CLIENT_SECRET = os.getenv("GIGACHAT_CLIENT_SECRET", None)
-if not any((GIGACHAT_CLIENT_ID, GIGACHAT_CLIENT_SECRET)):
-    logger.error("No credetials provided. Exiting...")
-    sys.exit(1)
+from config import settings
 
 
 def main():
     system_prompt = "Ты мастер рассказывать анекдоты"
     user_prompt = "Придумай короткий анекдот про программиста"
 
-    token = get_access_token(GIGACHAT_CLIENT_ID, GIGACHAT_CLIENT_SECRET)
-    result = execute_prompt(system_prompt=system_prompt, user_prompt=user_prompt, access_token=token)
+    token = get_access_token(
+        settings.gigachat_client_id,
+        settings.gigachat_client_secret,
+        settings.gigachat_oauth_url
+    )
+    result = execute_prompt(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        access_token=token,
+        chat_completions_url=settings.gigachat_chat_completions_url
+    )
     pprint.pprint(result)
 
 

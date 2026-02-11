@@ -1,12 +1,8 @@
 """Модуль для работы с GigaChat API."""
 import requests
 
+from config import settings
 from logger import logger
-
-
-# URL endpoints GigaChat API
-OAUTH_URL = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
-CHAT_COMPLETIONS_URL = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 
 
 class GigaChatError(Exception):
@@ -27,13 +23,14 @@ class APIError(GigaChatError):
     pass
 
 
-def get_access_token(client_id: str, client_secret: str) -> str:
+def get_access_token(client_id: str, client_secret: str, oauth_url: str) -> str:
     """
     Получает OAuth токен для доступа к GigaChat API.
     
     Args:
         client_id: Client ID из учетных данных
         client_secret: Client Secret из учетных данных
+        oauth_url: URL для OAuth аутентификации
         
     Returns:
         Access token строка
@@ -51,12 +48,12 @@ def get_access_token(client_id: str, client_secret: str) -> str:
     }
     
     data = {
-        "scope": "GIGACHAT_API_PERS",
+        "scope": settings.gigachat_scope,
     }
     
     try:
         response = requests.post(
-            OAUTH_URL,
+            oauth_url,
             headers=headers,
             data=data,
             timeout=30,
@@ -84,7 +81,7 @@ def get_access_token(client_id: str, client_secret: str) -> str:
         raise AuthenticationError(error_msg) from e
 
 
-def execute_prompt(system_prompt: str, user_prompt: str, access_token: str) -> str:
+def execute_prompt(system_prompt: str, user_prompt: str, access_token: str, chat_completions_url: str) -> str:
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {access_token}",
@@ -106,7 +103,7 @@ def execute_prompt(system_prompt: str, user_prompt: str, access_token: str) -> s
     
     try:
         response = requests.post(
-            CHAT_COMPLETIONS_URL,
+            chat_completions_url,
             headers=headers,
             json=payload,
             timeout=60,
